@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,interactive-widget=resizes-content">
 <meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="theme-color" content="#274f45"><title>GreenRider v1.26.14｜LIFE ENERGY MONSTERS</title>
+<meta name="theme-color" content="#274f45"><title>GreenRider v1.26.16｜HOME NO SCROLL FIX</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' rx='10' fill='%23345e50'/%3E%3Cpath d='M10 26C9 14 20 7 31 9C31 22 24 31 13 30M11 31L25 15' fill='none' stroke='%23efd7a0' stroke-width='3'/%3E%3C/svg%3E">
 <style>/* GreenRider v1.3: exhibition-size type and a stable bottom-right simulator.
    No state/quiz-side selector may reposition #demo-panel.
@@ -904,6 +904,48 @@ html,body{overscroll-behavior:none;-webkit-text-size-adjust:100%}
 }
 
 /* iPad portrait remains operable, but clearly asks the rider to rotate for the full HUD. */
+
+/* v1.26.16: Home page must not create a center scrollbar on normal desktop/iPad landscape.
+   Keep the route strip fixed at the bottom and compact the home content instead. */
+#home{
+ bottom:auto;
+ max-height:none;
+ overflow:visible;
+ padding-right:0;
+}
+@media(min-height:641px) and (max-height:900px){
+ #home{top:11.5%;max-width:760px}
+ #home h1{font-size:clamp(42px,3.7vw,58px);margin:10px 0;line-height:1.18}
+ #home .lead{font-size:20px;line-height:1.48;margin:0 0 12px}
+ .player-entry{padding:10px 14px;margin-bottom:10px}
+ .player-entry>label{margin-bottom:5px}
+ .home-actions{gap:10px}
+ .home-actions .primary,.home-actions .secondary{font-size:18px;min-height:50px;padding:9px 17px}
+ .simulation-actions{margin-top:6px}
+ .simulation-actions small{font-size:13px;line-height:1.35}
+ .home-note,#connection-note{font-size:15px;line-height:1.35;margin-top:6px;max-width:690px}
+ #route-preview{bottom:10px;padding:11px 18px}
+}
+@media(hover:none) and (pointer:coarse) and (orientation:landscape) and (min-width:900px) and (max-width:1400px) and (min-height:641px){
+ #home{top:10.5%;bottom:auto;padding-bottom:0;overflow:visible}
+ #home h1{font-size:clamp(40px,4.5vw,54px)}
+}
+/* Very short browser windows / split-screen only: hide the decorative route strip and allow local scrolling. */
+@media(max-height:640px){
+ #route-preview{display:none!important}
+ #home{top:82px;bottom:12px;left:7%;max-width:720px;padding:0 8px 18px 0;overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;scrollbar-width:thin}
+ #home .eyebrow{font-size:14px}
+ #home h1{font-size:36px;margin:8px 0;line-height:1.12}
+ #home .lead{font-size:17px;line-height:1.42;margin:0 0 9px}
+ .player-entry{margin-bottom:8px;padding:8px 11px}
+ .home-actions{gap:8px}
+ .home-actions .primary,.home-actions .secondary{font-size:17px;min-height:46px;padding:8px 14px}
+ .simulation-actions{margin-top:5px}
+ .simulation-actions small{font-size:12px}
+ .home-note,#connection-note{font-size:14px;line-height:1.35;margin-top:5px}
+}
+@media(max-width:700px){#home{bottom:16px}}
+
 @media(hover:none) and (pointer:coarse) and (orientation:portrait) and (min-width:700px){
  #orientation-hint{display:flex;position:fixed;z-index:60;top:max(10px,calc(var(--safe-top) + 8px));left:50%;transform:translateX(-50%);width:min(620px,calc(100vw - 32px));align-items:center;justify-content:center;gap:10px;padding:10px 14px;border:1px solid #d7c88d;border-radius:12px;background:#fff8dff2;box-shadow:0 6px 24px #31463724;color:#345848;text-align:center;pointer-events:none}
  #orientation-hint b{font-size:16px}#orientation-hint span{font-size:14px}
@@ -3450,7 +3492,7 @@ class Game{
  }
  closeSettings(){this.speech.stop();this.settingsOpen=false;show('settings',false);show('settings-shade',false);if(this.state==='home')this.speech.releaseMicrophone();if(this.pausedBySettings){this.pausedBySettings=false;this.resume()}}
  export(){
-  const data={version:'1.26.14-life-energy-monsters.1',musicTrack:{id:this.audio.trackId,name:this.audio.trackMeta?.name||''},player:this.currentPlayer,started:this.sessionStarted,finished:new Date().toISOString(),mode:this.mode,simulated:this.simulated,bleNatureDeclared:this.config.bleDataNature,renderer:this.renderer.name,energyWh:this.power.wh,carbonEquivalence:this.energyRuler.snapshot(this.power.wh,this.simulated),peakWatts:this.power.peak,gameDistance:this.distance,plannedRouteDistance:this.route.totalDistance,extensionDistance:Math.max(0,this.distance-this.route.totalDistance),rideSeconds:this.rideSeconds,collectibles:this.leaves,answers:this.answers,encounterAnswers:this.encounterAnswers,encounters:this.encounters.snapshot(),pledge:this.pledge,settings:{referenceWatts:this.config.referenceWatts,levelDistance:this.config.levelDistance},telemetrySamples:this.monitor.snapshot(),note:'Player seat/name are stored locally because the operator enabled classroom records. Simulated energy is not measured generation. Approximate ride distance uses a 0.70 m/world-unit visual calibration. No carbon reduction claimed.'};
+  const data={version:'1.26.16-home-no-scroll.1',musicTrack:{id:this.audio.trackId,name:this.audio.trackMeta?.name||''},player:this.currentPlayer,started:this.sessionStarted,finished:new Date().toISOString(),mode:this.mode,simulated:this.simulated,bleNatureDeclared:this.config.bleDataNature,renderer:this.renderer.name,energyWh:this.power.wh,carbonEquivalence:this.energyRuler.snapshot(this.power.wh,this.simulated),peakWatts:this.power.peak,gameDistance:this.distance,plannedRouteDistance:this.route.totalDistance,extensionDistance:Math.max(0,this.distance-this.route.totalDistance),rideSeconds:this.rideSeconds,collectibles:this.leaves,answers:this.answers,encounterAnswers:this.encounterAnswers,encounters:this.encounters.snapshot(),pledge:this.pledge,settings:{referenceWatts:this.config.referenceWatts,levelDistance:this.config.levelDistance},telemetrySamples:this.monitor.snapshot(),note:'Player seat/name are stored locally because the operator enabled classroom records. Simulated energy is not measured generation. Approximate ride distance uses a 0.70 m/world-unit visual calibration. No carbon reduction claimed.'};
   saveTextFile('GreenRider_session_'+new Date().toISOString().replace(/[:.]/g,'-')+'.json',JSON.stringify(data,null,2),'application/json;charset=utf-8');
  }
 }
@@ -3510,7 +3552,7 @@ const {Game}=__modules["src/core/Game.js"];
 const {threeInstalled}=__modules["vendor/engine-info.js"];
 const {DebugLog}=__modules["src/services/DebugLog.js"];
 const $=id=>document.getElementById(id);
-const debug=new DebugLog('1.26.14-life-energy-monsters.1');globalThis.__GR_LOG__=debug;
+const debug=new DebugLog('1.26.16-home-no-scroll.1');globalThis.__GR_LOG__=debug;
 const coarsePointer=matchMedia('(pointer:coarse)').matches||navigator.maxTouchPoints>0;const appleTouch=/iPad|iPhone|iPod/i.test(navigator.userAgent||'')||(navigator.platform==='MacIntel'&&Number(navigator.maxTouchPoints)>1);document.body.classList.toggle('touch-ui',coarsePointer);document.body.classList.toggle('apple-touch',appleTouch);debug.info('platform.detected',{coarsePointer,appleTouch,maxTouchPoints:navigator.maxTouchPoints||0,userAgent:navigator.userAgent||''});
 window.addEventListener('error',e=>debug.error('window.error',{message:e.message,filename:e.filename,line:e.lineno,column:e.colno,error:e.error}));
 window.addEventListener('unhandledrejection',e=>debug.error('window.unhandledrejection',{reason:e.reason}));
