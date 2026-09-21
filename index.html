@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,interactive-widget=resizes-content">
 <meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="theme-color" content="#274f45"><title>GreenRider v1.26.42｜UNIFIED ANSWER TYPE + ROAD SIGNS</title>
+<meta name="theme-color" content="#274f45"><title>GreenRider v1.26.43｜UNIFIED ANSWER TYPE + ROAD SIGNS</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' rx='10' fill='%23345e50'/%3E%3Cpath d='M10 26C9 14 20 7 31 9C31 22 24 31 13 30M11 31L25 15' fill='none' stroke='%23efd7a0' stroke-width='3'/%3E%3C/svg%3E">
 <style>/* GreenRider v1.3: exhibition-size type and a stable bottom-right simulator.
    No state/quiz-side selector may reposition #demo-panel.
@@ -1605,8 +1605,99 @@ body.combat-open .encounter-answers button span{
 #world-sign-layer{z-index:2!important}
 .road-sign-label{transform-origin:center center!important;border-radius:6px!important;box-shadow:0 2px 7px rgba(20,50,41,.18)!important}
 
+
+
+/* v1.26.43: monster warning header fills the frame and uses an isolated monster portrait.
+   The monster floats over the left edge of the text frame; text keeps a protected inset so nothing overlaps. */
+body.combat-open #encounter-quiz.encounter-card{
+  grid-template-rows:clamp(148px,15vh,168px) minmax(110px,18vh) minmax(190px,1fr) auto 72px!important;
+}
+body.combat-open .encounter-stage-head{
+  position:relative!important;
+  grid-template-columns:minmax(0,1fr) 128px!important;
+  align-items:center!important;
+  width:min(1480px,90vw)!important;
+  min-height:0!important;
+  height:100%!important;
+  gap:16px!important;
+  padding:8px 20px 8px clamp(215px,15vw,285px)!important;
+  overflow:visible!important;
+  box-sizing:border-box!important;
+}
+body.combat-open .encounter-monster-thumb-wrap{
+  position:absolute!important;
+  left:clamp(-42px,-2.2vw,-24px)!important;
+  top:50%!important;
+  transform:translateY(-50%)!important;
+  width:clamp(210px,15vw,280px)!important;
+  height:calc(100% + 32px)!important;
+  margin:0!important;
+  overflow:visible!important;
+  border:0!important;
+  border-radius:0!important;
+  background:transparent!important;
+  box-shadow:none!important;
+  z-index:4!important;
+  pointer-events:none!important;
+}
+body.combat-open #encounter-monster-thumb{
+  display:block!important;
+  width:100%!important;
+  height:100%!important;
+  object-fit:contain!important;
+  background:transparent!important;
+}
+body.combat-open .encounter-stage-copy{
+  position:relative!important;
+  z-index:5!important;
+  align-self:center!important;
+  min-width:0!important;
+  display:flex!important;
+  flex-direction:column!important;
+  justify-content:center!important;
+  gap:6px!important;
+  min-height:72%!important;
+}
+body.combat-open .encounter-stage-copy #encounter-name{
+  font-size:clamp(46px,3.7vw,70px)!important;
+  line-height:1.02!important;
+  margin:0!important;
+  font-weight:950!important;
+  letter-spacing:.4px!important;
+}
+body.combat-open #encounter-monster-desc{
+  font-size:clamp(25px,2.05vw,36px)!important;
+  line-height:1.18!important;
+  font-weight:820!important;
+  margin:0!important;
+}
+body.combat-open #encounter-timer{
+  position:relative!important;
+  z-index:5!important;
+  align-self:center!important;
+}
+@media(max-height:760px){
+  body.combat-open #encounter-quiz.encounter-card{
+    grid-template-rows:clamp(118px,16vh,134px) 92px minmax(180px,1fr) auto 70px!important;
+  }
+  body.combat-open .encounter-stage-head{
+    grid-template-columns:minmax(0,1fr) 98px!important;
+    width:min(1460px,92vw)!important;
+    padding:6px 12px 6px clamp(176px,14vw,224px)!important;
+    gap:10px!important;
+  }
+  body.combat-open .encounter-monster-thumb-wrap{
+    left:clamp(-30px,-1.8vw,-18px)!important;
+    width:clamp(174px,14vw,220px)!important;
+    height:calc(100% + 24px)!important;
+  }
+  body.combat-open .encounter-stage-copy{gap:3px!important;min-height:74%!important}
+  body.combat-open .encounter-stage-copy #encounter-name{font-size:clamp(36px,3.5vw,50px)!important;line-height:1!important}
+  body.combat-open #encounter-monster-desc{font-size:clamp(20px,1.9vw,27px)!important;line-height:1.12!important}
+}
+
 </style>
-<meta name="greenrider-build" content="1.26.42-fatfs">
+<meta name="greenrider-build" content="1.26.43-fatfs">
 </head>
 <body data-quiz-side="right" data-input-mode="ble">
 <div id="orientation-hint" role="status" aria-live="polite"><b>建議將 iPad 橫向使用</b><span>橫向可保留完整 HUD、題目與監控線圖。</span></div>
@@ -1862,9 +1953,10 @@ __modules["src/world/NativeRenderer.js"]=(()=>{
 
 const {compose,mm,identity,lookAt,perspective,rgb}=__modules["src/world/math.js"];
 class NativeRenderer {
- constructor(canvas){
-  this.canvas=canvas;this.name='原生 WebGL 離線引擎';
-  const gl=canvas.getContext('webgl2',{antialias:true,alpha:false,preserveDrawingBuffer:true})||canvas.getContext('webgl',{antialias:true,alpha:false,preserveDrawingBuffer:true});
+ constructor(canvas,options={}){
+  this.canvas=canvas;this.name='原生 WebGL 離線引擎';this.transparent=!!options.transparent;
+  const contextOptions={antialias:true,alpha:this.transparent,preserveDrawingBuffer:true,premultipliedAlpha:true};
+  const gl=canvas.getContext('webgl2',contextOptions)||canvas.getContext('webgl',contextOptions);
   if(!gl)throw Error('這台電腦無法啟動 WebGL。請開啟瀏覽器硬體加速，再重新載入。');
   this.gl=gl;this.cache=new Map();this.drawCalls=0;
   const shader=(type,src)=>{const s=gl.createShader(type);gl.shaderSource(s,src);gl.compileShader(s);if(!gl.getShaderParameter(s,gl.COMPILE_STATUS))throw Error(gl.getShaderInfoLog(s));return s};
@@ -1900,17 +1992,20 @@ class NativeRenderer {
   this.skyA=gl.getAttribLocation(this.skyProgram,'a');
   this.skyTop=gl.getUniformLocation(this.skyProgram,'top');this.skyBottom=gl.getUniformLocation(this.skyProgram,'bottom');
   gl.enable(gl.DEPTH_TEST);gl.depthFunc(gl.LEQUAL);gl.enable(gl.BLEND);gl.blendFunc(gl.SRC_ALPHA,gl.ONE_MINUS_SRC_ALPHA);
+  gl.clearColor(0,0,0,this.transparent?0:1);
  }
  resize(w,h,dpr=1){this.canvas.width=Math.round(w*dpr);this.canvas.height=Math.round(h*dpr);this.aspect=w/h;this.gl.viewport(0,0,this.canvas.width,this.canvas.height)}
  resource(g){let b=this.cache.get(g.id);if(b)return b;const gl=this.gl;b=[g.positions,g.normals,g.colors||new Float32Array(g.positions.length).fill(1)].map(a=>{const b=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,b);gl.bufferData(gl.ARRAY_BUFFER,a,gl.STATIC_DRAW);return b});this.cache.set(g.id,b);return b}
  render(scene,camera,theme){
   const gl=this.gl;this.drawCalls=0;
   gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);
-  gl.useProgram(this.skyProgram);gl.disable(gl.DEPTH_TEST);
-  for(const a of this.a)if(a>=0)gl.disableVertexAttribArray(a);
-  gl.bindBuffer(gl.ARRAY_BUFFER,this.skyBuffer);gl.enableVertexAttribArray(this.skyA);gl.vertexAttribPointer(this.skyA,2,gl.FLOAT,false,0,0);
-  gl.uniform3fv(this.skyTop,rgb(theme.sky));gl.uniform3fv(this.skyBottom,rgb(theme.fog));
-  gl.drawArrays(gl.TRIANGLES,0,3);gl.disableVertexAttribArray(this.skyA);gl.enable(gl.DEPTH_TEST);
+  if(!this.transparent){
+   gl.useProgram(this.skyProgram);gl.disable(gl.DEPTH_TEST);
+   for(const a of this.a)if(a>=0)gl.disableVertexAttribArray(a);
+   gl.bindBuffer(gl.ARRAY_BUFFER,this.skyBuffer);gl.enableVertexAttribArray(this.skyA);gl.vertexAttribPointer(this.skyA,2,gl.FLOAT,false,0,0);
+   gl.uniform3fv(this.skyTop,rgb(theme.sky));gl.uniform3fv(this.skyBottom,rgb(theme.fog));
+   gl.drawArrays(gl.TRIANGLES,0,3);gl.disableVertexAttribArray(this.skyA);gl.enable(gl.DEPTH_TEST);
+  }else gl.enable(gl.DEPTH_TEST);
   gl.useProgram(this.program);
   const vp=mm(perspective(camera.fov||48,this.aspect),lookAt(camera.eye,camera.target));
   this.lastVP=vp;
@@ -3827,6 +3922,9 @@ const {SpeechService}=__modules["src/services/Speech.js"];
 const {saveTextFile,isAppleTouchDevice}=__modules["src/services/FileSave.js"];
 const {ClassroomStore,normalizeSeat,parseRosterText,parseQuestionText,validateQuestionBank,rosterTemplate,questionTemplate,aggregateCsv,questionCsv}=__modules["src/services/ClassroomStore.js"];
 const {World}=__modules["src/world/World.js"];
+const {NativeRenderer}=__modules["src/world/NativeRenderer.js"];
+const {Node}=__modules["src/world/geometry.js"];
+const {enemyModel}=__modules["src/rpg/EnemyFactory.js"];
 const {clamp,trackX}=__modules["src/world/math.js"];
 const {RouteProgress,isRideState,stationDistance}=__modules["src/core/RouteProgress.js"];
 const {EncounterManager}=__modules["src/rpg/EncounterManager.js"];
@@ -3871,7 +3969,7 @@ class Game{
   this.power=new PowerSystem(this.config);this.energyRuler=new EnergyRuler(carbonConfig);this.audio=new AudioService(this.config);this.fx=new FxLayer($('fx-canvas'));this.monitor=new TelemetryMonitor(this.log);
   this.speech=new SpeechService(this.config,msg=>{if(msg!==this._lastSpeechStatus){this._lastSpeechStatus=msg;this.log?.info('speech.ui-status',{message:msg,state:this.state,settingsOpen:this.settingsOpen,encounterQuizOpen:this.encounterQuizOpen})}if(this.settingsOpen&&$('voice-setup-status'))text('voice-setup-status',msg);else if(this.encounterQuizOpen&&$('encounter-voice-status'))text('encounter-voice-status',msg);else text('voice-status',msg)},active=>{this.audio.setVoiceActive(active);$('encounter-voice-btn')?.classList.toggle('listening',active)});
   this.ble=this.transportKind==='wifi'?new WifiHttpClient(this.config,s=>this.receiveBle(s),(status,msg)=>this.bleStatus(status,msg)):new BleClient(this.config,s=>this.receiveBle(s),(status,msg)=>this.bleStatus(status,msg));
-  this.world=new World(renderer,levels,this.config);this.encounters=new EncounterManager(encounterConfig||{},this.config);this.encounterQuizOpen=false;this.encounterAnswers=[];this.currentEncounterQuestion=null;this.encounterVoiceQuestionId='';const coverage=this.validateEncounterQuestionCoverage(this.questions);if(!coverage.ok){this.questions=JSON.parse(JSON.stringify(this.builtinQuestions));try{this.classroom.saveQuestions(this.questions)}catch{}}
+  this.world=new World(renderer,levels,this.config);this.encounters=new EncounterManager(encounterConfig||{},this.config);this.encounterQuizOpen=false;this.encounterAnswers=[];this.currentEncounterQuestion=null;this.encounterVoiceQuestionId='';this.monsterPortraitRenderer=null;this.monsterPortraitScene=null;this.monsterPortraitNode=null;const coverage=this.validateEncounterQuestionCoverage(this.questions);if(!coverage.ok){this.questions=JSON.parse(JSON.stringify(this.builtinQuestions));try{this.classroom.saveQuestions(this.questions)}catch{}}
   this.isAppleTouch=isAppleTouchDevice();this.simulated=false;this.toastUntil=0;this.route=new RouteProgress(this.config.levelDistance,this.levels.length);this.pendingQuizzes=[];this.bind();this.setQuizSide(this.config.quizSide);
   document.body.classList.toggle('apple-touch',this.isAppleTouch);document.body.classList.toggle('touch-ui',matchMedia('(pointer:coarse)').matches||navigator.maxTouchPoints>0);
   text('engine-label',renderer.name);
@@ -4347,11 +4445,24 @@ class Game{
   }
  }
 
+ renderEncounterMonsterPortrait(encounter){
+  const canvas=$('encounter-monster-thumb');if(!canvas||!encounter)return;
+  try{
+   const wrap=canvas.parentElement,w=Math.max(174,Math.round(wrap?.clientWidth||220)),h=Math.max(118,Math.round(wrap?.clientHeight||160));
+   if(!this.monsterPortraitRenderer)this.monsterPortraitRenderer=new NativeRenderer(canvas,{transparent:true});
+   if(this.monsterPortraitNode){try{this.monsterPortraitRenderer.disposeNode(this.monsterPortraitNode)}catch{}this.monsterPortraitNode=null}
+   this.monsterPortraitRenderer.resize(w,h,Math.min(2,globalThis.devicePixelRatio||1));
+   const scene=new Node(),node=enemyModel(encounter.id);node.p=[0,-.18,0];node.r=[0,-.16,0];node.s=[1.38,1.38,1.38];if(node.shield)node.shield.visible=false;scene.add(node);
+   const camera={eye:[0,1.42,7.6],target:[0,1.38,0],fov:36},theme=this.levels?.[encounter.level]||{sky:'#7eddea',fog:'#f4e8ae'};
+   this.monsterPortraitRenderer.render(scene,camera,theme);this.monsterPortraitScene=scene;this.monsterPortraitNode=node;
+  }catch(error){this.log?.warn('encounter.portrait.failed',{message:error?.message||String(error),encounterId:encounter?.id||''})}
+ }
+
  openEncounterQuiz(encounter){
   if(!encounter||this.state!=='riding'||this.currentQuestion)return;const q=this.questionForEncounter(encounter);if(!q){this.toast(`${encounter.name} 沒有可用題目，請到設定檢查生活節能題庫。`,6);return}
   this.currentEncounterQuestion=q;this.encounterQuizOpen=true;this.encounterVoiceQuestionId='';this.encounters.setQuestionTimerPaused(false);this.log?.info('encounter.quiz.open',{encounterId:encounter.id,questionId:q.id,choices:q.choices.length,correct:q.correct+1});this.energyRuler.toggleInfo(false);this.speech.stop();text('encounter-name',encounter.name+'出現！');text('encounter-monster-desc',encounter.subtitle||encounter.wasteDescription||'發現浪費能源的行為！');text('encounter-question',q.question);$('encounter-question').dataset.fit='auto';$('encounter-answers').replaceChildren();
   q.choices.forEach((choice,i)=>{const b=document.createElement('button');b.type='button';const n=document.createElement('b');n.textContent=String(i+1);const span=document.createElement('span');span.textContent=choice;span.dataset.fit='auto';b.append(n,span);b.onclick=()=>this.answerEncounter(i);$('encounter-answers').append(b)});
-  text('encounter-seconds','10');$('encounter-timer-fill').style.width='100%';$('encounter-timer').classList.remove('urgent');$('encounter-quiz').classList.remove('timeout-card');show('encounter-feedback',false);$('encounter-feedback').classList.remove('is-wrong');document.body.classList.remove('feedback-overlay');show('encounter-quiz',true);document.body.classList.add('combat-open');show('ride-hint',true);requestAnimationFrame(()=>{this.fitEncounterTypography();requestAnimationFrame(()=>this.fitEncounterTypography());try{const src=$('world'),dst=$('encounter-monster-thumb'),ctx=dst?.getContext('2d');if(src&&dst&&ctx){const sw=src.width,sh=src.height,cw=Math.max(1,Math.floor(sw*.38)),ch=Math.max(1,Math.floor(sh*.38)),sx=Math.max(0,Math.floor((sw-cw)/2)),sy=Math.max(0,Math.floor(sh*.20));ctx.clearRect(0,0,dst.width,dst.height);ctx.drawImage(src,sx,sy,cw,ch,0,0,dst.width,dst.height)}}catch{}});$('encounter-answers').querySelector('button')?.focus({preventScroll:true})
+  text('encounter-seconds','10');$('encounter-timer-fill').style.width='100%';$('encounter-timer').classList.remove('urgent');$('encounter-quiz').classList.remove('timeout-card');show('encounter-feedback',false);$('encounter-feedback').classList.remove('is-wrong');document.body.classList.remove('feedback-overlay');show('encounter-quiz',true);document.body.classList.add('combat-open');show('ride-hint',true);requestAnimationFrame(()=>{this.fitEncounterTypography();this.renderEncounterMonsterPortrait(encounter);requestAnimationFrame(()=>{this.fitEncounterTypography();this.renderEncounterMonsterPortrait(encounter)});});$('encounter-answers').querySelector('button')?.focus({preventScroll:true})
  }
  answerEncounter(index,{fromVoice=false}={}){
   const q=this.currentEncounterQuestion;if(!q)return null;const result=this.encounters.answer(index,q.correct);this.log?.info('encounter.answer',{questionId:q.id,selected:index+1,correctIndex:q.correct+1,accepted:result.accepted,correct:result.correct});if(!result.accepted)return result;const e=result.encounter,buttons=$('encounter-answers').querySelectorAll('button');this.encounterAnswers.push({id:e.id,questionId:q.id,level:e.level,selected:index,correct:result.correct,correctIndex:q.correct,timeout:false,delta:result.delta,atDistance:this.distance});this.audio.answer(result.correct);this.applyFootprintDelta(result.delta,result.correct?'correct':'wrong',e.name);
@@ -4531,7 +4642,7 @@ class Game{
  }
  closeSettings(){this.speech.stop();this.settingsOpen=false;show('settings',false);show('settings-shade',false);if(this.state==='home')this.speech.releaseMicrophone();if(this.pausedBySettings){this.pausedBySettings=false;this.resume()}}
  export(){
-  const data={version:'1.26.42-fatfs-ap-wifi.1',musicTrack:{id:this.audio.trackId,name:this.audio.trackMeta?.name||''},player:this.currentPlayer,started:this.sessionStarted,finished:new Date().toISOString(),mode:this.mode,simulated:this.simulated,bleNatureDeclared:this.config.bleDataNature,renderer:this.renderer.name,energyWh:this.power.wh,carbonEquivalence:this.energyRuler.snapshot(this.power.wh,this.simulated),peakWatts:this.power.peak,gameDistance:this.distance,plannedRouteDistance:this.route.totalDistance,extensionDistance:Math.max(0,this.distance-this.route.totalDistance),rideSeconds:this.rideSeconds,collectibles:this.leaves,answers:this.answers,encounterAnswers:this.encounterAnswers,encounters:this.encounters.snapshot(),pledge:this.pledge,settings:{referenceWatts:this.config.referenceWatts,levelDistance:this.config.levelDistance},telemetrySamples:this.monitor.snapshot(),note:'Player seat/name are stored locally because the operator enabled classroom records. Simulated energy is not measured generation. Approximate ride distance compensates for the 1.22x exhibition visual-motion boost and uses the 0.70 m/world-unit calibration. No carbon reduction claimed.'};
+  const data={version:'1.26.43-fatfs-ap-wifi.1',musicTrack:{id:this.audio.trackId,name:this.audio.trackMeta?.name||''},player:this.currentPlayer,started:this.sessionStarted,finished:new Date().toISOString(),mode:this.mode,simulated:this.simulated,bleNatureDeclared:this.config.bleDataNature,renderer:this.renderer.name,energyWh:this.power.wh,carbonEquivalence:this.energyRuler.snapshot(this.power.wh,this.simulated),peakWatts:this.power.peak,gameDistance:this.distance,plannedRouteDistance:this.route.totalDistance,extensionDistance:Math.max(0,this.distance-this.route.totalDistance),rideSeconds:this.rideSeconds,collectibles:this.leaves,answers:this.answers,encounterAnswers:this.encounterAnswers,encounters:this.encounters.snapshot(),pledge:this.pledge,settings:{referenceWatts:this.config.referenceWatts,levelDistance:this.config.levelDistance},telemetrySamples:this.monitor.snapshot(),note:'Player seat/name are stored locally because the operator enabled classroom records. Simulated energy is not measured generation. Approximate ride distance compensates for the 1.22x exhibition visual-motion boost and uses the 0.70 m/world-unit calibration. No carbon reduction claimed.'};
   saveTextFile('GreenRider_session_'+new Date().toISOString().replace(/[:.]/g,'-')+'.json',JSON.stringify(data,null,2),'application/json;charset=utf-8');
  }
 }
